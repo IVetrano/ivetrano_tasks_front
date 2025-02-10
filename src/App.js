@@ -1,28 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
-import { Button } from 'react-bootstrap';
-import { motion } from 'motion/react';
+import React, { useState } from "react";
+import { Container, Row, Col } from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import Sidebar from './components/Sidebar/Sidebar';
+import Home from './components/Home/Home';
 
-function App() {
+const Content = ({ section }) => {
+  const contentMap = {
+    home: <Home/>,
+    tasks: "Acá están las tareas.",
+    calendar: "Calendario.",
+    metrics: "Graficos."
+  };
+  return contentMap[section];
+};
+
+const App = () => {
+  const [selectedSection, setSelectedSection] = useState("home");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <motion.img animate={{ x: 100 }} transition={{ type: "spring" }} src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <Button> Hola </Button>
-      </header>
-    </div>
+    <Container fluid className="bg-dark">
+      <Row>
+        <Col xs={3} md={1} className="p-0">
+          <Col md={7}>
+            <Sidebar onSelect={setSelectedSection} />
+          </Col>          
+        </Col>
+        <Col className="pt-4">
+          <Content section={selectedSection} />
+        </Col>
+      </Row>
+    </Container>
   );
-}
+};
 
 export default App;
