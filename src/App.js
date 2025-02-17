@@ -1,14 +1,16 @@
 import React, { useState } from "react";
+import "./App.css";
 import { Container, Row, Col } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from './components/Home/Home';
+import Tasks from "./components/Tasks/Tasks";
 
 const Content = ({ section }) => {
   const contentMap = {
     home: <Home/>,
-    tasks: "Acá están las tareas.",
+    tasks: <Tasks/>,
     calendar: "Calendario.",
     metrics: "Graficos."
   };
@@ -21,9 +23,9 @@ const App = () => {
   return (
     <Container fluid className="bg-dark">
       <Row>
-        <Col xs={3} md={1} className="p-0">
+        <Col xs={3} md={1} className="p-0 sidebar-sticky">
           <Col md={7}>
-            <Sidebar onSelect={setSelectedSection} />
+            <Sidebar onSelect={setSelectedSection}/>
           </Col>          
         </Col>
         <Col className="pt-4">

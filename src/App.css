@@ -14,3 +14,10 @@
   font-size: calc(10px + 2vmin);
   color: #ccd0cf;
 }
+
+.sidebar-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 20px;
+}
