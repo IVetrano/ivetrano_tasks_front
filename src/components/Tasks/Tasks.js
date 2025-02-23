@@ -1,19 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Button, Modal, Form } from "react-bootstrap";
 import { FaCirclePlus } from "react-icons/fa6";
 import { IoSearchCircle } from "react-icons/io5";
 import Task from "./Task";
 import { motion } from "framer-motion";
 
+
 function Tasks() {
   const [showSearch, setShowSearch] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+
+  const tagColors = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"];
+
+  const handleShowDetails = (task) => {
+    setSelectedTask(task);
+    setShowDetails(true);
+  };
+
+  // Obtener datos desde la API
+  useEffect(() => {
+    fetch("https://ivetranotask.pythonanywhere.com/tasks")
+      .then((response) => response.json())
+      .then((data) => {
+        setTasks(data);
+      })
+      .catch((error) => console.error("Error al obtener las tareas:", error));
+  }, []);
+
+  useEffect(() => {
+    fetch("https://ivetranotask.pythonanywhere.com/users")
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch((error) => console.error("Error al obtener los usuarios:", error));
+  }, []);
   
-  const taskList = [
-    { titulo: "Tarea 1", tags: [["Programacion", "#dc3545"], ["Trabajo", "#6f42c1"]] },
-    { titulo: "Tarea 2", tags: [["Casa", "#198754"], ["Reparaciones", "#fd7e14"]] },
-    { titulo: "Tarea 3", tags: [["Ejercicio", "#0d6efd"], ["Salud", "#d63384"]] }
-  ];
 
   return (
     <Container>
@@ -30,9 +56,13 @@ function Tasks() {
               <h2 className="mx-auto" style={{ color: "white" }}>
                 {index === 0 ? "Sin empezar" : index === 1 ? "En proceso" : "Terminadas"}
               </h2>
-              {taskList.map((task, idx) => (
-                <Row key={idx} className="mb-2">
-                  <Task titulo={task.titulo} tags={task.tags} />
+              {tasks
+                .filter(task => task.status === index)
+                .map((task) => (
+                <Row key={task.id} className="mb-2">
+                  <Task titulo={task.title} tags={task.tags.map(tag =>[tag.name, tagColors[tag.colour]])} 
+                    descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
+                    fechaFin={task.end_date} onShowDetails={() => handleShowDetails(task)}/>
                 </Row>
               ))}
             </Col>
@@ -82,7 +112,7 @@ function Tasks() {
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-dark">
           <Button variant="outline-light" className="border-0" onClick={() => setShowSearch(false)}>Cerrar</Button>
-          <Button variant="outline-light" className="border-0" style={{backgroundColor:"#6f42c1"}}>Buscar</Button>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>Buscar</Button>
         </Modal.Footer>
       </Modal>
 
@@ -118,6 +148,14 @@ function Tasks() {
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label>Encargado</Form.Label>
+              <Form.Select>
+                <option>Seleccionar</option>
+                {users.map((user) => (
+                  <option>{user.name}</option>))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label>Fecha Final</Form.Label>
               <Form.Control type="date" />
             </Form.Group>
@@ -125,9 +163,44 @@ function Tasks() {
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-dark">
           <Button variant="outline-light" className="border-0" onClick={() => setShowCreate(false)}>Cerrar</Button>
-          <Button variant="outline-light" className="border-0" style={{backgroundColor:"#6f42c1"}}>Guardar</Button>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>Guardar</Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showDetails} onHide={() => setShowDetails(false)} centered>
+        <Modal.Header closeButton className="bg-dark text-light border-dark">
+          <Modal.Title>Detalles de la Tarea</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark text-light border-dark">
+          {selectedTask && (
+            <>
+              <h5>{selectedTask.titulo}</h5>
+              <p><strong>Tags:</strong></p>
+              <div>
+                {selectedTask.tags.map(([tag, color], index) => (
+                  <span key={index} style={{
+                    backgroundColor: color,
+                    color: "white",
+                    borderRadius: "12px",
+                    padding: "5px 10px",
+                    marginRight: "5px",
+                    marginBottom: "5px",
+                    display: "inline-block"
+                  }}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer className="bg-dark text-light border-dark">
+          <Button variant="outline-light" className="border-0" onClick={() => setShowDetails(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </Container>
   );
 }
