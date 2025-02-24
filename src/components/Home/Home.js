@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 const Home = () => {
   return (
     <Container className="text-light">
-      <motion.div initial={{x: "100%", opacity: "0"}} animate={{x: "0", opacity: "100"}}>
+      <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}}>
       <Row className="h-100 mb-4">
         <Col xs="auto"><h1>Bienvenido a</h1></Col>
         <Col xs="auto" className="p-0"><Logo style={{ width: "64px", height: "42px" }} /></Col>
@@ -16,7 +16,7 @@ const Home = () => {
       </Row>
       </motion.div>
 
-      <motion.div initial={{ x: "100%", opacity: "0" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "1" }}>
+      <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "1" }}>
         <Row className="my-4">
           <Col xs="auto"><h3>Podés ir a</h3></Col>
           <Col xs="auto"><FaListCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
@@ -24,7 +24,7 @@ const Home = () => {
         </Row>
       </motion.div>
 
-      <motion.div initial={{ x: "100%", opacity: "0" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "2" }}>
+      <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "2" }}>
         <Row className="my-4">
           <Col xs="auto"><h3>O podes ir a</h3></Col>
           <Col xs="auto"><FaCalendarCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
@@ -32,7 +32,7 @@ const Home = () => {
         </Row>
       </motion.div>
 
-      <motion.div initial={{ x: "100%", opacity: "0" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "3" }}>
+      <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "3" }}>
         <Row className="my-4">
           <Col xs="auto"><h3>O tambien podes ir a</h3></Col>
           <Col xs="auto"><FaChartPie style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
@@ -40,7 +40,7 @@ const Home = () => {
         </Row>
       </motion.div>
 
-      <motion.div initial={{x: "100%", opacity: "0"}} animate={{x: "0", opacity: "100"}} transition={{delay: "5"}}>
+      <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}} transition={{delay: "5"}}>
       <Row style={{ paddingTop: "25%" }}>
         <h4>
           Si te interesa ver más de mis proyectos podés hacer click{" "}

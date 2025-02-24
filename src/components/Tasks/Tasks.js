@@ -5,6 +5,7 @@ import { IoSearchCircle } from "react-icons/io5";
 import Task from "./Task";
 import { motion } from "framer-motion";
 
+const COLORS = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"];
 
 function Tasks() {
   const [showSearch, setShowSearch] = useState(false);
@@ -13,8 +14,26 @@ function Tasks() {
   const [showDetails, setShowDetails] = useState(false);
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState(COLORS[0]);
 
-  const tagColors = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"];
+  const handleTagSelect = (tag) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleCreateTag = () => {
+    if (newTagName.trim() && !tags.some(tag => tag.name === newTagName)) {
+      setTags([...tags, { name: newTagName, color: newTagColor }]);
+      setNewTagName("");
+      setNewTagColor(COLORS[0]);
+      setShowTagModal(false);
+    }
+  };
 
   const handleShowDetails = (task) => {
     setSelectedTask(task);
@@ -39,8 +58,17 @@ function Tasks() {
       })
       .catch((error) => console.error("Error al obtener los usuarios:", error));
   }, []);
-  
 
+  useEffect(() => {
+    fetch("https://ivetranotask.pythonanywhere.com/tags")
+      .then((response) => response.json())
+      .then((data) => {
+        setTags(data);
+      })
+      .catch((error) => console.error("Error al obtener los tags:", error));
+  }, []);
+  
+  
   return (
     <Container>
       <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
@@ -60,7 +88,7 @@ function Tasks() {
                 .filter(task => task.status === index)
                 .map((task) => (
                 <Row key={task.id} className="mb-2">
-                  <Task titulo={task.title} tags={task.tags.map(tag =>[tag.name, tagColors[tag.colour]])} 
+                  <Task titulo={task.title} tags={task.tags.map(tag =>[tag.name, COLORS[tag.colour]])} 
                     descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
                     fechaFin={task.end_date} onShowDetails={() => handleShowDetails(task)}/>
                 </Row>
@@ -151,19 +179,91 @@ function Tasks() {
               <Form.Label>Encargado</Form.Label>
               <Form.Select>
                 <option>Seleccionar</option>
-                {users.map((user) => (
-                  <option>{user.name}</option>))}
+                {users.map((user, index) => (
+                  <option key={index}>{user.name}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Fecha Final</Form.Label>
               <Form.Control type="date" />
             </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tags</Form.Label>
+              <div>
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    style={{ backgroundColor: COLORS[tag.colour],
+                      cursor: "pointer",
+                      color: "white",
+                      borderRadius: "12px",
+                      padding: "5px 10px",
+                      marginRight: "5px",
+                      marginBottom: "5px",
+                      fontSize: "0.9em",
+                      display: "inline-block" }}
+                    onClick={() => handleTagSelect(tag)}
+                  >
+                    {tag.name} {selectedTags.includes(tag) && "✓"}
+                  </span>
+                ))}
+              </div>
+              <Button variant="outline-light" className="mt-2" onClick={() => setShowTagModal(true)}>
+                + Crear Tag
+              </Button>
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-dark">
-          <Button variant="outline-light" className="border-0" onClick={() => setShowCreate(false)}>Cerrar</Button>
-          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>Guardar</Button>
+          <Button variant="outline-light" className="border-0" onClick={() => setShowCreate(false)}>
+            Cerrar
+          </Button>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>
+            Guardar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal para crear tags */}
+      <Modal show={showTagModal} onHide={() => setShowTagModal(false)} centered>
+        <Modal.Header closeButton className="bg-dark text-light border-dark">
+          <Modal.Title>Crear Nuevo Tag</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="bg-dark text-light border-dark">
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Nombre del Tag</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese el nombre"
+                value={newTagName}
+                onChange={(e) => setNewTagName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Color</Form.Label>
+              <div>
+                {COLORS.map((color, index) => (
+                  <span
+                    key={index}
+                    style={{ backgroundColor: color, cursor: "pointer", margin: "5px", padding: "10px" }}
+                    onClick={() => setNewTagColor(color)}
+                  >
+                    {newTagColor === color ? "✓" : ""}
+                  </span>
+                ))}
+              </div>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer className="bg-dark text-light border-dark">
+          <Button variant="outline-light" className="border-0" onClick={() => setShowTagModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }} onClick={handleCreateTag}>
+            Crear
+          </Button>
         </Modal.Footer>
       </Modal>
 
