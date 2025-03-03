@@ -4,6 +4,8 @@ import { ReactComponent as Logo } from '../../logo.svg';
 import { FaListCheck } from "react-icons/fa6";
 import { FaChartPie, FaCalendarCheck } from "react-icons/fa";
 import { motion } from "motion/react";
+import { FaUserCircle } from "react-icons/fa";
+
 
 const Home = () => {
   return (
@@ -18,33 +20,48 @@ const Home = () => {
 
       <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "1" }}>
         <Row className="my-4">
-          <Col xs="auto"><h3>Podés ir a</h3></Col>
-          <Col xs="auto"><FaListCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
-          <Col xs="auto"><h3>para ver tus tareas</h3></Col>
+          <Col xs="auto"><h3>Ivetrano Tasks es un gestor de tareas para la compañía ficticia Ivetrano. Cada usuario es un empleado al que se le pueden asignar tareas para completar.</h3></Col>
         </Row>
       </motion.div>
 
       <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "2" }}>
         <Row className="my-4">
-          <Col xs="auto"><h3>O podes ir a</h3></Col>
-          <Col xs="auto"><FaCalendarCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
-          <Col xs="auto"><h3>para ver que tareas te esperan en tu calendario</h3></Col>
+          <Col xs="auto"><h3>Visita</h3></Col>
+          <Col xs="auto"><FaListCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
+          <Col xs="auto"><h3>para ver, buscar y crear tareas.</h3></Col>
         </Row>
       </motion.div>
 
       <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "3" }}>
         <Row className="my-4">
-          <Col xs="auto"><h3>O tambien podes ir a</h3></Col>
-          <Col xs="auto"><FaChartPie style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
-          <Col xs="auto"><h3>para ver a que tipo de tareas le dedicas mas tiempo</h3></Col>
+          <Col xs="auto"><h3>Dirígete a</h3></Col>
+          <Col xs="auto"><FaCalendarCheck style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
+          <Col xs="auto"><h3>para ver las tareas en el calendario.</h3></Col>
         </Row>
       </motion.div>
 
-      <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}} transition={{delay: "5"}}>
-      <Row style={{ paddingTop: "25%" }}>
+      <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "4" }}>
+        <Row className="my-4">
+          <Col xs="auto"><h3>Consulta</h3></Col>
+          <Col xs="auto"><FaChartPie style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
+          <Col xs="auto"><h3>para ver a qué tipo de tareas se dedica más tiempo.</h3></Col>
+        </Row>
+      </motion.div>
+
+      <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "5" }}>
+        <Row className="my-4">
+          <Col xs="auto"><h3>O también puedes ir a</h3></Col>
+          <Col xs="auto"><FaUserCircle style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
+          <Col xs="auto"><h3>para crear un usuario o iniciar sesión.</h3></Col>
+        </Row>
+        <Row><h3>Si no has iniciado sesión, las tareas que crees se asignarán al usuario "Anónimo".</h3></Row>
+      </motion.div>
+
+      <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}} transition={{delay: "6"}}>
+      <Row style={{ paddingTop: "10%" }}>
         <h4>
-          Si te interesa ver más de mis proyectos podés hacer click{" "}
-          <a href="https://ivetrano.github.io/github-portfolio/" style={{ color: "#6f42c1" }}>acá</a>
+          Si te interesa ver más de mis proyectos, puedes hacer clic{" "}
+          <a href="https://ivetrano.github.io/github-portfolio/" style={{ color: "#6f42c1" }}>aquí</a>
           .
         </h4>
       </Row>

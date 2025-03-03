@@ -96,11 +96,11 @@ function Tasks() {
             </Col>
           ))}
           <Col>
-            <div style={{ marginTop: "200%" }}>
-              <Button variant="outline-light" className="border-0 w-100 mx-auto" onClick={() => setShowSearch(true)}>
+            <div style={{marginTop: "26%", position: "fixed", top: "20px", right: "20px", padding: "20px" }}>
+              <Button variant="outline-light" className="border-0 w-100 mx-auto" onClick={() => setShowSearch(true)} title="Buscar tarea">
                 <IoSearchCircle className="w-100 h-100" />
               </Button>
-              <Button variant="outline-light" className="border-0 w-100" onClick={() => setShowCreate(true)}>
+              <Button variant="outline-light" className="border-0 w-100 mt-2" onClick={() => setShowCreate(true)} title="Crear tarea">
                 <FaCirclePlus className="w-100 h-100" />
               </Button>
             </div>
