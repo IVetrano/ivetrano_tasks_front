@@ -10,13 +10,20 @@ const COLORS = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"
 const PRIORITIES = ["Alta", "Media", "Baja"];
 const STATUSES = ["Sin empezar", "En proceso", "Terminada"];
 
-function Tasks( user ) {
+function Tasks(user) {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [tags, setTags] = useState([]);
 
   const [showSearch, setShowSearch] = useState(false);
-  
+  const [filterTitle, setFilterTitle] = useState("");
+  const [filterPriority, setFilterPriority] = useState();
+  const [filterEndDate, setFilterEndDate] = useState("");
+  const [filterCreationDate, setFilterCreationDate] = useState("");
+  const [filterCreator, setFilterCreator] = useState("");
+  const [filterManager, setFilterManager] = useState("");
+  const [filterTags, setFilterTags] = useState([]);
+
   const [showCreate, setShowCreate] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
@@ -36,20 +43,26 @@ function Tasks( user ) {
     );
   };
 
+  const handleFilterTagSelect = (tag) => {
+    setFilterTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
   const handleCreateTag = () => {
     if (newTagName.trim() && !tags.some(tag => tag.name === newTagName)) {
       const newTag = { name: newTagName, color: newTagColor };
       fetch(`https://ivetranotask.pythonanywhere.com/tags?name=${newTagName}&colour=${COLORS.indexOf(newTagColor)}`, {
         method: 'POST',
       })
-      .then(response => response.json())
-      .then(data => {
-        setTags([...tags, newTag]);
-        setNewTagName("");
-        setNewTagColor(COLORS[0]);
-        setShowTagModal(false);
-      })
-      .catch(error => console.error("Error al crear el tag:", error));
+        .then(response => response.json())
+        .then(data => {
+          setTags([...tags, newTag]);
+          setNewTagName("");
+          setNewTagColor(COLORS[0]);
+          setShowTagModal(false);
+        })
+        .catch(error => console.error("Error al crear el tag:", error));
     }
   };
 
@@ -70,19 +83,49 @@ function Tasks( user ) {
         tags: selectedTags.map(tag => tag.name)
       })
     })
-    .then(response => {
-      if (response.status === 201) {
-        setShowCreate(false);
-        return response.json();
-      } else {
-        throw new Error('Register failed');
+      .then(response => {
+        if (response.status === 201) {
+          setShowCreate(false);
+          return response.json();
+        } else {
+          throw new Error('Register failed');
+        }
+      })
+      .catch(error => {
+        console.error("Error crear tarea:", error);
+        alert("Error al crear tarea");
+      });
+  }
+
+  const handleFilter = () => {
+    const filterData = {};
+
+    if (filterTitle) filterData.title = filterTitle;
+    if (filterPriority !== undefined) filterData.priority = filterPriority;
+    if (filterCreator) filterData.was_made_by = filterCreator;
+    if (filterManager) filterData.assigned_to = filterManager;
+    if (filterEndDate) filterData.end_date = filterEndDate;
+    if (filterCreationDate) filterData.creation_date = filterCreationDate;
+    if (filterTags.length > 0) filterData.tags = filterTags.map(tag => tag.name).join(',');
+
+    const queryString = new URLSearchParams(filterData).toString();
+
+    fetch(`https://ivetranotask.pythonanywhere.com/tasks?${queryString}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
       }
     })
-    .catch(error => {
-      console.error("Error crear tarea:", error);
-      alert("Error al crear tarea");
-    });
-  }
+      .then(response => response.json())
+      .then(data => {
+        setTasks(data);
+        setShowSearch(false);
+      })
+      .catch(error => {
+        console.error("Error al filtrar tareas:", error);
+        alert("Error al filtrar tareas");
+      });
+  };
 
   // Obtener datos desde la API
   useEffect(() => {
@@ -111,7 +154,7 @@ function Tasks( user ) {
       })
       .catch((error) => console.error("Error al obtener los tags:", error));
   }, []);
-  
+
   return (
     <Container>
       <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
@@ -130,16 +173,16 @@ function Tasks( user ) {
               {tasks
                 .filter(task => task.status === index)
                 .map((task) => (
-                <Row key={task.id} className="mb-2">
-                  <Task titulo={task.title} tags={task.tags.map(tag =>[tag.name, COLORS[tag.colour]])} 
-                    descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
-                    fechaFin={task.end_date} creador={task.was_made_by} encargado={task.manager}/>
-                </Row>
-              ))}
+                  <Row key={task.id} className="mb-2">
+                    <Task titulo={task.title} tags={task.tags.map(tag => [tag.name, COLORS[tag.colour]])}
+                      descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
+                      fechaFin={task.end_date} creador={task.was_made_by} encargado={task.manager} />
+                  </Row>
+                ))}
             </Col>
           ))}
           <Col>
-            <div style={{marginTop: "26%", position: "fixed", top: "20px", right: "20px", padding: "20px" }}>
+            <div style={{ marginTop: "26%", position: "fixed", top: "20px", right: "20px", padding: "20px" }}>
               <Button variant="outline-light" className="border-0 w-100 mx-auto" onClick={() => setShowSearch(true)} title="Buscar tarea">
                 <IoSearchCircle className="w-100 h-100" />
               </Button>
@@ -160,30 +203,73 @@ function Tasks( user ) {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Título</Form.Label>
-              <Form.Control type="text" placeholder="Ingrese el título" />
+              <Form.Control type="text" placeholder="Ingrese el título" value={filterTitle}
+                onChange={(e) => setFilterTitle(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Prioridad</Form.Label>
-              <Form.Select>
-                <option>Seleccionar</option>
-                <option>Alta</option>
-                <option>Media</option>
-                <option>Baja</option>
+              <Form.Select onChange={(e) => setFilterPriority(PRIORITIES.indexOf(e.target.value))}>
+                <option value="">Seleccionar</option>
+                {PRIORITIES.map((priority, index) => (
+                  <option key={index} value={priority}>{priority}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Creador</Form.Label>
+              <Form.Select onChange={(e) => setFilterCreator(e.target.value)}>
+                <option value="">Seleccionar</option>
+                {users.map((user, index) => (
+                  <option key={index} value={user.username}>{user.name}</option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Encargado</Form.Label>
+              <Form.Select onChange={(e) => setFilterManager(e.target.value)}>
+                <option value="">Seleccionar</option>
+                {users.map((user, index) => (
+                  <option key={index} value={user.username}>{user.name}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Fecha Final</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control type="date" onChange={(e) => setFilterEndDate(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Fecha de Creación</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control type="date" onChange={(e) => setFilterCreationDate(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Tags</Form.Label>
+              <div>
+                {tags.map((tag, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      backgroundColor: COLORS[tag.colour],
+                      cursor: "pointer",
+                      color: "white",
+                      borderRadius: "12px",
+                      padding: "5px 10px",
+                      marginRight: "5px",
+                      marginBottom: "5px",
+                      fontSize: "0.9em",
+                      display: "inline-block"
+                    }}
+                    onClick={() => handleFilterTagSelect(tag)}
+                  >
+                    {tag.name} {filterTags.includes(tag) && "✓"}
+                  </span>
+                ))}
+              </div>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer className="bg-dark text-light border-dark">
           <Button variant="outline-light" className="border-0" onClick={() => setShowSearch(false)}>Cerrar</Button>
-          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>Buscar</Button>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }} onClick={handleFilter}>Buscar</Button>
         </Modal.Footer>
       </Modal>
 
@@ -196,13 +282,13 @@ function Tasks( user ) {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Título</Form.Label>
-              <Form.Control type="text" placeholder="Ingrese el título" value={newTaskTitle} 
-              onChange={(e) => setNewTaskTitle(e.target.value)}/>
+              <Form.Control type="text" placeholder="Ingrese el título" value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Descripción</Form.Label>
               <Form.Control as="textarea" rows={3} placeholder="Ingrese la descripción" value={newTaskDescription}
-              onChange={(e) => setNewTaskDescription(e.target.value)} />
+                onChange={(e) => setNewTaskDescription(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Prioridad</Form.Label>
@@ -223,7 +309,6 @@ function Tasks( user ) {
             <Form.Group className="mb-3">
               <Form.Label>Encargado</Form.Label>
               <Form.Select onChange={(e) => setNewTaskManager(e.target.value)}>
-                <option>Seleccionar</option>
                 {users.map((user, index) => (
                   <option key={index} value={user.username}>{user.name}</option>
                 ))}
@@ -239,7 +324,8 @@ function Tasks( user ) {
                 {tags.map((tag, index) => (
                   <span
                     key={index}
-                    style={{ backgroundColor: COLORS[tag.colour],
+                    style={{
+                      backgroundColor: COLORS[tag.colour],
                       cursor: "pointer",
                       color: "white",
                       borderRadius: "12px",
@@ -247,7 +333,8 @@ function Tasks( user ) {
                       marginRight: "5px",
                       marginBottom: "5px",
                       fontSize: "0.9em",
-                      display: "inline-block" }}
+                      display: "inline-block"
+                    }}
                     onClick={() => handleTagSelect(tag)}
                   >
                     {tag.name} {selectedTags.includes(tag) && "✓"}
