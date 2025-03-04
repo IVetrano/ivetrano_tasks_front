@@ -19,13 +19,14 @@ const Content = ({ section }) => {
 
 const App = () => {
   const [selectedSection, setSelectedSection] = useState("home");
+  const [user, setUser] = useState("Anonimo");
 
   return (
     <Container fluid className="bg-dark">
       <Row>
         <Col xs={3} md={1} className="p-0 sidebar-sticky">
           <Col md={7}>
-            <Sidebar onSelect={setSelectedSection}/>
+            <Sidebar onSelect={setSelectedSection} setUser={setUser} user={user}/>
           </Col>          
         </Col>
         <Col className="pt-4">

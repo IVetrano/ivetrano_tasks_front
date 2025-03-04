@@ -9,7 +9,7 @@ import { FaUserCircle } from "react-icons/fa";
 
 const Home = () => {
   return (
-    <Container className="text-light">
+    <Container className="text-light" style={{overflow: "hidden"}}>
       <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}}>
       <Row className="h-100 mb-4">
         <Col xs="auto"><h1>Bienvenido a</h1></Col>

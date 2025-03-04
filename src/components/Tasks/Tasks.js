@@ -28,10 +28,18 @@ function Tasks() {
 
   const handleCreateTag = () => {
     if (newTagName.trim() && !tags.some(tag => tag.name === newTagName)) {
-      setTags([...tags, { name: newTagName, color: newTagColor }]);
-      setNewTagName("");
-      setNewTagColor(COLORS[0]);
-      setShowTagModal(false);
+      const newTag = { name: newTagName, color: newTagColor };
+      fetch(`https://ivetranotask.pythonanywhere.com/tags?name=${newTagName}&colour=${COLORS.indexOf(newTagColor)}`, {
+        method: 'POST',
+      })
+      .then(response => response.json())
+      .then(data => {
+        setTags([...tags, newTag]);
+        setNewTagName("");
+        setNewTagColor(COLORS[0]);
+        setShowTagModal(false);
+      })
+      .catch(error => console.error("Error al crear el tag:", error));
     }
   };
 
@@ -266,7 +274,8 @@ function Tasks() {
           </Button>
         </Modal.Footer>
       </Modal>
-
+      
+      {/* Modal de detalles */}
       <Modal show={showDetails} onHide={() => setShowDetails(false)} centered>
         <Modal.Header closeButton className="bg-dark text-light border-dark">
           <Modal.Title>Detalles de la Tarea</Modal.Title>
