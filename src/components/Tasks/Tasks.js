@@ -4,18 +4,28 @@ import { FaCirclePlus } from "react-icons/fa6";
 import { IoSearchCircle } from "react-icons/io5";
 import Task from "./Task";
 import { motion } from "framer-motion";
+import { data } from "react-router-dom";
 
 const COLORS = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"];
+const PRIORITIES = ["Alta", "Media", "Baja"];
+const STATUSES = ["Sin empezar", "En proceso", "Terminada"];
 
-function Tasks() {
-  const [showSearch, setShowSearch] = useState(false);
-  const [showCreate, setShowCreate] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [showDetails, setShowDetails] = useState(false);
+function Tasks( user ) {
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState([]);
   const [tags, setTags] = useState([]);
+
+  const [showSearch, setShowSearch] = useState(false);
+  
+  const [showCreate, setShowCreate] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState(0);
+  const [newTaskStatus, setNewTaskStatus] = useState(0);
+  const [newTaskManager, setNewTaskManager] = useState("");
+  const [newTaskEndDate, setNewTaskEndDate] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
+
   const [showTagModal, setShowTagModal] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState(COLORS[0]);
@@ -43,10 +53,36 @@ function Tasks() {
     }
   };
 
-  const handleShowDetails = (task) => {
-    setSelectedTask(task);
-    setShowDetails(true);
-  };
+  const handleCreateTask = () => {
+    fetch("https://ivetranotask.pythonanywhere.com/tasks", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        title: newTaskTitle,
+        description: newTaskDescription,
+        priority: newTaskPriority,
+        status: newTaskStatus,
+        was_made_by: user.user,
+        assigned_to: [newTaskManager],
+        end_date: newTaskEndDate,
+        tags: selectedTags.map(tag => tag.name)
+      })
+    })
+    .then(response => {
+      if (response.status === 201) {
+        setShowCreate(false);
+        return response.json();
+      } else {
+        throw new Error('Register failed');
+      }
+    })
+    .catch(error => {
+      console.error("Error crear tarea:", error);
+      alert("Error al crear tarea");
+    });
+  }
 
   // Obtener datos desde la API
   useEffect(() => {
@@ -76,7 +112,6 @@ function Tasks() {
       .catch((error) => console.error("Error al obtener los tags:", error));
   }, []);
   
-  
   return (
     <Container>
       <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
@@ -98,7 +133,7 @@ function Tasks() {
                 <Row key={task.id} className="mb-2">
                   <Task titulo={task.title} tags={task.tags.map(tag =>[tag.name, COLORS[tag.colour]])} 
                     descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
-                    fechaFin={task.end_date} onShowDetails={() => handleShowDetails(task)}/>
+                    fechaFin={task.end_date} creador={task.was_made_by} encargado={task.manager}/>
                 </Row>
               ))}
             </Col>
@@ -161,40 +196,42 @@ function Tasks() {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Título</Form.Label>
-              <Form.Control type="text" placeholder="Ingrese el título" />
+              <Form.Control type="text" placeholder="Ingrese el título" value={newTaskTitle} 
+              onChange={(e) => setNewTaskTitle(e.target.value)}/>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Descripción</Form.Label>
-              <Form.Control as="textarea" rows={3} placeholder="Ingrese la descripción" />
+              <Form.Control as="textarea" rows={3} placeholder="Ingrese la descripción" value={newTaskDescription}
+              onChange={(e) => setNewTaskDescription(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Prioridad</Form.Label>
-              <Form.Select>
-                <option>Alta</option>
-                <option>Media</option>
-                <option>Baja</option>
+              <Form.Select onChange={(e) => setNewTaskPriority(PRIORITIES.indexOf(e.target.value))}>
+                {PRIORITIES.map((priority, index) => (
+                  <option key={index} value={priority}>{priority}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Estado</Form.Label>
-              <Form.Select>
-                <option>Sin empezar</option>
-                <option>En proceso</option>
-                <option>Terminada</option>
+              <Form.Select onChange={(e) => setNewTaskStatus(STATUSES.indexOf(e.target.value))}>
+                {STATUSES.map((status, index) => (
+                  <option key={index} value={status}>{status}</option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Encargado</Form.Label>
-              <Form.Select>
+              <Form.Select onChange={(e) => setNewTaskManager(e.target.value)}>
                 <option>Seleccionar</option>
                 {users.map((user, index) => (
-                  <option key={index}>{user.name}</option>
+                  <option key={index} value={user.username}>{user.name}</option>
                 ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Fecha Final</Form.Label>
-              <Form.Control type="date" />
+              <Form.Control type="date" onChange={(e) => setNewTaskEndDate(e.target.value)} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Tags</Form.Label>
@@ -227,7 +264,7 @@ function Tasks() {
           <Button variant="outline-light" className="border-0" onClick={() => setShowCreate(false)}>
             Cerrar
           </Button>
-          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }}>
+          <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }} onClick={handleCreateTask}>
             Guardar
           </Button>
         </Modal.Footer>
@@ -271,41 +308,6 @@ function Tasks() {
           </Button>
           <Button variant="outline-light" className="border-0" style={{ backgroundColor: "#6f42c1" }} onClick={handleCreateTag}>
             Crear
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      
-      {/* Modal de detalles */}
-      <Modal show={showDetails} onHide={() => setShowDetails(false)} centered>
-        <Modal.Header closeButton className="bg-dark text-light border-dark">
-          <Modal.Title>Detalles de la Tarea</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="bg-dark text-light border-dark">
-          {selectedTask && (
-            <>
-              <h5>{selectedTask.titulo}</h5>
-              <p><strong>Tags:</strong></p>
-              <div>
-                {selectedTask.tags.map(([tag, color], index) => (
-                  <span key={index} style={{
-                    backgroundColor: color,
-                    color: "white",
-                    borderRadius: "12px",
-                    padding: "5px 10px",
-                    marginRight: "5px",
-                    marginBottom: "5px",
-                    display: "inline-block"
-                  }}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer className="bg-dark text-light border-dark">
-          <Button variant="outline-light" className="border-0" onClick={() => setShowDetails(false)}>
-            Cerrar
           </Button>
         </Modal.Footer>
       </Modal>

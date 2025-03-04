@@ -7,10 +7,10 @@ import Sidebar from './components/Sidebar/Sidebar';
 import Home from './components/Home/Home';
 import Tasks from "./components/Tasks/Tasks";
 
-const Content = ({ section }) => {
+const Content = ({ section, user }) => {
   const contentMap = {
     home: <Home/>,
-    tasks: <Tasks/>,
+    tasks: <Tasks user={user}/>,
     calendar: "Calendario.",
     metrics: "Graficos."
   };
@@ -30,7 +30,7 @@ const App = () => {
           </Col>          
         </Col>
         <Col className="pt-4">
-          <Content section={selectedSection} />
+          <Content section={selectedSection} user={user} />
         </Col>
       </Row>
     </Container>

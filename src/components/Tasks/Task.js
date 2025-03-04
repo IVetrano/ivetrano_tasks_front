@@ -3,7 +3,7 @@ import { Card, Button, Row, Col, Modal } from "react-bootstrap";
 import { IoIosArrowDroprightCircle } from "react-icons/io";
 import { FaEdit } from "react-icons/fa";
 
-function Task({ titulo, tags, descripcion, prioridad, fechaCreacion, fechaFin }) {
+function Task({ titulo, tags, descripcion, prioridad, fechaCreacion, fechaFin, creador, encargado }) {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -53,6 +53,8 @@ function Task({ titulo, tags, descripcion, prioridad, fechaCreacion, fechaFin })
           <p><strong>Prioridad:</strong> {prioridad === 0 ? "Alta" : prioridad === 1 ? "Media" : "Baja"}</p>
           <p><strong>Fecha de creación:</strong> {fechaCreacion}</p>
           <p><strong>Fecha final:</strong> {fechaFin}</p>
+          <p><strong>Creador:</strong> {creador}</p>
+          <p><strong>Encargado:</strong> {encargado}</p>
           <p><strong>Tags:</strong></p>
           {tags.map(([tag, color], index) => (
             <span key={index} style={{
