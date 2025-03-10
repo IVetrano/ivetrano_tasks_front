@@ -4,7 +4,6 @@ import { FaCirclePlus } from "react-icons/fa6";
 import { IoSearchCircle } from "react-icons/io5";
 import Task from "./Task";
 import { motion } from "framer-motion";
-import { data } from "react-router-dom";
 
 const COLORS = ["#dc3545", "#6f42c1", "#fd7e14", "#198754", "#0d6efd", "#d63384"];
 const PRIORITIES = ["Alta", "Media", "Baja"];
@@ -86,6 +85,7 @@ function Tasks(user) {
       .then(response => {
         if (response.status === 201) {
           setShowCreate(false);
+          refreshTasks();
           return response.json();
         } else {
           throw new Error('Register failed');
@@ -127,14 +127,18 @@ function Tasks(user) {
       });
   };
 
-  // Obtener datos desde la API
-  useEffect(() => {
+  const refreshTasks = () => {
     fetch("https://ivetranotask.pythonanywhere.com/tasks")
       .then((response) => response.json())
       .then((data) => {
         setTasks(data);
       })
       .catch((error) => console.error("Error al obtener las tareas:", error));
+  };
+
+  // Obtener datos desde la API
+  useEffect(() => {
+    refreshTasks();
   }, []);
 
   useEffect(() => {
@@ -174,9 +178,10 @@ function Tasks(user) {
                 .filter(task => task.status === index)
                 .map((task) => (
                   <Row key={task.id} className="mb-2">
-                    <Task titulo={task.title} tags={task.tags.map(tag => [tag.name, COLORS[tag.colour]])}
+                    <Task id={task.id} titulo={task.title} tags={task.tags.map(tag => [tag.name, COLORS[tag.colour]])}
                       descripcion={task.description} prioridad={task.priority} fechaCreacion={task.creation_date}
-                      fechaFin={task.end_date} creador={task.was_made_by} encargado={task.manager} />
+                      fechaFin={task.end_date} creador={task.was_made_by} encargado={task.manager} estado={task.status} PRIORITIES={PRIORITIES}
+                      STATUSES={STATUSES} users={users} COLORS={COLORS} AllTags={tags} refreshTasks={refreshTasks} />
                   </Row>
                 ))}
             </Col>
