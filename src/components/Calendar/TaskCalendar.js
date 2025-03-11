@@ -48,7 +48,8 @@ const TaskCalendar = () => {
     <Container>
       <Row>
         <Col>
-          <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+          <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="text-center">
+            <h1 className="mx-auto" style={{ color: "white" }}>Calendario</h1>
             <Calendar
               views={[Views.MONTH]}
               defaultView={view}

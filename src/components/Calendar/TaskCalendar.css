@@ -47,3 +47,8 @@
 .rbc-show-more:hover {
   color: #5a3791;
 }
+
+.rbc-overlay {
+  background-color: #212529; /* Cambia este color al que prefieras */
+  color: #ffffff; /* Cambia el color del texto si es necesario */
+}
