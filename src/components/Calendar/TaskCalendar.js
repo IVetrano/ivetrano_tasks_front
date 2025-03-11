@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import { motion } from "framer-motion";
 import moment from 'moment';
 import 'moment/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -47,27 +48,29 @@ const TaskCalendar = () => {
     <Container>
       <Row>
         <Col>
-          <Calendar
-            views={[Views.MONTH]}
-            defaultView={view}
-            view={view}
-            date={date}
-            onView={(view) => setView(view)}
-            onNavigate={(date) => {
-              setDate(new Date(date));
-            }}
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 600, color: 'white' }}
-            selectable
-            popup
-            messages={messages}
-            eventPropGetter={(event) => ({
-              style: event.style
-            })}
-          />
+          <motion.div initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+            <Calendar
+              views={[Views.MONTH]}
+              defaultView={view}
+              view={view}
+              date={date}
+              onView={(view) => setView(view)}
+              onNavigate={(date) => {
+                setDate(new Date(date));
+              }}
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 600, color: 'white' }}
+              selectable
+              popup
+              messages={messages}
+              eventPropGetter={(event) => ({
+                style: event.style
+              })}
+            />
+          </motion.div>
         </Col>
       </Row>
     </Container>
