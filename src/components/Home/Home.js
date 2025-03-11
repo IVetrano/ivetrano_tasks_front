@@ -58,7 +58,7 @@ const Home = () => {
       </motion.div>
 
       <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}} transition={{delay: "6"}}>
-      <Row style={{ paddingTop: "10%" }}>
+      <Row style={{ paddingTop: "3%" }}>
         <h4>
           Si te interesa ver más de mis proyectos, puedes hacer clic{" "}
           <a href="https://ivetrano.github.io/github-portfolio/" style={{ color: "#6f42c1" }}>aquí</a>
