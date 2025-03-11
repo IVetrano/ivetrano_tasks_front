@@ -20,7 +20,7 @@ const Home = () => {
 
       <motion.div initial={{ x: "100%", opacity: "0.001" }} animate={{ x: "0", opacity: "100" }} transition={{ delay: "1" }}>
         <Row className="my-4">
-          <Col xs="auto"><h3>Ivetrano Tasks es un gestor de tareas para la compañía ficticia Ivetrano. Cada usuario es un empleado al que se le pueden asignar tareas para completar.</h3></Col>
+          <Col xs="auto"><h3>Ivetrano Tasks es un gestor de tareas para la compañía de software ficticia Ivetrano. Cada usuario es un empleado al que se le pueden asignar tareas para completar.</h3></Col>
         </Row>
       </motion.div>
 
@@ -54,7 +54,7 @@ const Home = () => {
           <Col xs="auto"><FaUserCircle style={{ width: "30px", height: "30px", color: "#6f42c1" }} /></Col>
           <Col xs="auto"><h3>para crear un usuario o iniciar sesión.</h3></Col>
         </Row>
-        <Row><h3>Si no has iniciado sesión, las tareas que crees se asignarán al usuario "Anónimo".</h3></Row>
+        <Row><h3>Si no has iniciado sesión, las tareas que crees tomaran como creador al usuario "Anónimo".</h3></Row>
       </motion.div>
 
       <motion.div initial={{x: "100%", opacity: "0.001"}} animate={{x: "0", opacity: "100"}} transition={{delay: "6"}}>
