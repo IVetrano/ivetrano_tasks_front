@@ -6,12 +6,13 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from './components/Home/Home';
 import Tasks from "./components/Tasks/Tasks";
+import TaskCalendar from "./components/Calendar/TaskCalendar";
 
 const Content = ({ section, user }) => {
   const contentMap = {
     home: <Home/>,
     tasks: <Tasks user={user}/>,
-    calendar: "Calendario.",
+    calendar: <TaskCalendar/>,
     metrics: "Graficos."
   };
   return contentMap[section];
